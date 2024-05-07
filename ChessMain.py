@@ -13,6 +13,7 @@ import ChessEngine, ChessAI
 import sys
 from multiprocessing import Process, Queue
 from main_screen import main_screen
+from end_screen import end_screen  # Import the end_screen function
 
 BOARD_WIDTH = 512
 BOARD_HEIGHT = 512
@@ -58,8 +59,6 @@ def main():
     move_undone = False
     move_finder_process = None
     move_log_font = p.font.SysFont("Arial", 14, False, False)
-    # player_one = True
-    # player_two = True
     engine = chess.engine.SimpleEngine.popen_uci("C:/Users/abhin/Just for fun/chessai/stockfish/stockfish-windows-x86-64-avx2.exe")
     player_choice = main_screen()
     
@@ -165,30 +164,39 @@ def main():
         if not game_over:
             drawMoveLog(screen, game_state, move_log_font, stockfish_move)
 
-        if game_state.checkmate:
+        if game_state.checkmate or game_state.stalemate:
             game_over = True
-            if game_state.white_to_move:
-                drawEndGameText(screen, "Black wins by checkmate")
-            else:
-                drawEndGameText(screen, "White wins by checkmate")
-                
-            # Print the move log to the console
-            print("Game Over - Checkmate!")
-            printMoveLogAsPGN(game_state.move_log)
-            running = False
+            result = "Checkmate" if game_state.checkmate else "Stalemate"
+            drawEndGameText(screen, f"{result}!")
 
-        elif game_state.stalemate:
-            game_over = True
-            drawEndGameText(screen, "Stalemate")
-            
             # Print the move log to the console
-            print("Game Over - Stalemate!")
+            print(f"Game Over - {result}!")
             printMoveLogAsPGN(game_state.move_log)
-            running = False
+
+            play_again = end_screen(result)
+            if play_again:
+                player_choice = main_screen()
+                if player_choice is not None:
+                    # Reset the game state and continue the game loop
+                    game_state = ChessEngine.GameState()
+                    valid_moves = game_state.getValidMoves()
+                    square_selected = ()
+                    player_clicks = []
+                    move_made = False
+                    animate = False
+                    game_over = False
+                    if player_choice == "ai":
+                        player_one = True
+                        player_two = False
+                    else:
+                        player_one = True
+                        player_two = True
+            else:
+                running = False
 
         clock.tick(MAX_FPS)
         p.display.flip()
-    
+
     engine.quit()
     p.quit()
     
