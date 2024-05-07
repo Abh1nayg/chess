@@ -2,8 +2,6 @@
 Handling the AI moves.
 """
 import random
-import chess
-import chess.engine
 
 piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1}
 
