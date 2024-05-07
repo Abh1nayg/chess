@@ -3,8 +3,6 @@ Main driver file.
 Handling user input.
 Displaying current GameStatus object.
 """
-# if os.name == 'nt':  # Windows
-#     sys.stdout = open('nul', 'w')
 
 import pygame as p
 import chess
@@ -59,7 +57,7 @@ def main():
     move_undone = False
     move_finder_process = None
     move_log_font = p.font.SysFont("Arial", 14, False, False)
-    engine = chess.engine.SimpleEngine.popen_uci("C:/Users/abhin/Just for fun/chessai/stockfish/stockfish-windows-x86-64-avx2.exe")
+    engine = chess.engine.SimpleEngine.popen_uci("path/to/stockfish")
     player_choice = main_screen()
     
     if player_choice is None:
